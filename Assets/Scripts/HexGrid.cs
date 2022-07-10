@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Gokyolcu.Utilities;
 
 public class HexGrid : MonoBehaviour
 {
@@ -13,10 +14,15 @@ public class HexGrid : MonoBehaviour
     [SerializeField] private float cellSize;
     [SerializeField] private Vector3 originPosition;
 
+    [SerializeField] private ColorPicker colorPicker;
     [SerializeField] private GameObject cellPrefab;
     private Hex[,] gridArray;
+    [SerializeField] private Transform parentOfHexes;
 
-    [SerializeField] private ColorPicker colorPicker;
+    [SerializeField] private bool showCellDebugTexts;
+    [SerializeField] private bool showCellDebugLines;
+    private TextMesh[,] debugTextArray;
+
     #endregion
 
     #region Grid Properties
@@ -53,7 +59,7 @@ public class HexGrid : MonoBehaviour
     }
 
     #endregion
-    
+
     public void Start()
     {
         InitGrid();
@@ -62,26 +68,34 @@ public class HexGrid : MonoBehaviour
     private void InitGrid()
     {
         gridArray = new Hex[Width, Height];
+        debugTextArray = new TextMesh[Width, Height];
+
         for (int i = 0; i < Width; i++)
         {
             for (int j = 0; j < Height; j++)
             {
-                GameObject newHexObject = Instantiate(cellPrefab, transform);
+                GameObject newHexObject = Instantiate(cellPrefab, parentOfHexes);
                 Hex newHex = newHexObject.GetComponent<Hex>();
 
                 newHex.InitHex(i, j, this, colorPicker.GetRandomColor());
                 gridArray[i, j] = newHex;
+
+                ShowDebug(i, j);
             }
         }
-
-        ShowDebug();
     }
 
     #region Getters
 
     public Hex GetGridObject(int x, int y) 
     { 
-        return (x < 0 || y < 0 || x >= Width || y >= Height) ? null : gridArray[x, y]; 
+        return (x < 0 || y < 0 || x >= Width || y >= Height) ? null : gridArray[x, y];
+    }
+    
+    public Hex GetGridObject(Vector3 worldPosition)
+    {
+        GetXY(worldPosition, out int x, out int y);
+        return GetGridObject(x, y);
     }
 
     public Vector3 GetWorldPosition(int x, int y) 
@@ -95,42 +109,54 @@ public class HexGrid : MonoBehaviour
 
     public void GetXY(Vector3 worldPosition, out int x, out int y)
     {
-        x = (int)((2f / 3 * worldPosition.x) / CellSizeUnit);
-        y = (int)((-1f / 3 * worldPosition.x + Mathf.Sqrt(3) / 3 * worldPosition.y  ) / CellSizeUnit);
+        Vector3 offsetedWorldPosition = worldPosition - originPosition - new Vector3(CellWidthInUnit * .25f, CellHeightInUnit * .5f);
+
+        x = Mathf.RoundToInt((offsetedWorldPosition.x / CellSizeUnit) * 2f / 3);
+        y = Mathf.RoundToInt((((offsetedWorldPosition.y + CellHeightInUnit * (x / 2)) / CellSizeUnit) - Mathf.Sqrt(3f) / 2 * x) / Mathf.Sqrt(3f));
     }
 
     #endregion
 
     #region Debug
 
-    public void ShowDebug()
+    public void ShowDebug(int i, int j)
     {
-        for (int i = 0; i < gridArray.GetLength(0); i++)
-        {
-            for (int j = 0; j < gridArray.GetLength(1); j++)
-            {
-                DrawAHex(i, j);
-            }
-        }
+        if (showCellDebugTexts)
+            WriteDebugText(i, j, gridArray[i, j].transform, gridArray[i, j]?.ToString());
+
+        if (showCellDebugLines)
+            DrawAHex(gridArray[i, j]);
     }
 
-    private void DrawAHex(int i, int j)
+    private void DrawAHex(Hex hex)
     {
         // Find corners
-        Vector3 hexWorldPosition0 = GetWorldPosition(i, j);
+        Vector3 hexWorldPosition0 = GetWorldPosition(hex.X, hex.Y);
         Vector3 hexWorldPosition1 = hexWorldPosition0 + new Vector3(CellWidthInUnit / 2, 0f);
         Vector3 hexWorldPosition2 = hexWorldPosition1 + new Vector3(CellWidthInUnit / 4, CellHeightInUnit / 2);
         Vector3 hexWorldPosition3 = hexWorldPosition2 + new Vector3(-CellWidthInUnit / 4, CellHeightInUnit / 2);
         Vector3 hexWorldPosition4 = hexWorldPosition3 + new Vector3(-CellWidthInUnit / 2, 0f);
         Vector3 hexWorldPosition5 = hexWorldPosition4 + new Vector3(-CellWidthInUnit / 4, -CellHeightInUnit / 2);
 
-        // Draw lines between neghbour corners
+        // Draw lines between corners
         Debug.DrawLine(hexWorldPosition0, hexWorldPosition1, Color.white, DEBUG_DURATION);
         Debug.DrawLine(hexWorldPosition1, hexWorldPosition2, Color.white, DEBUG_DURATION);
         Debug.DrawLine(hexWorldPosition2, hexWorldPosition3, Color.white, DEBUG_DURATION);
         Debug.DrawLine(hexWorldPosition3, hexWorldPosition4, Color.white, DEBUG_DURATION);
         Debug.DrawLine(hexWorldPosition4, hexWorldPosition5, Color.white, DEBUG_DURATION);
         Debug.DrawLine(hexWorldPosition5, hexWorldPosition0, Color.white, DEBUG_DURATION);
+    }
+
+    private void WriteDebugText(int i, int j, Transform parent, string message = "")
+    {
+        debugTextArray[i, j] = CreateWorldText(
+            message,
+            parent,
+            gridArray[i, j].GetCenterOffset(),
+            14,
+            Color.black,
+            TextAnchor.MiddleCenter
+            );
     }
 
     #endregion

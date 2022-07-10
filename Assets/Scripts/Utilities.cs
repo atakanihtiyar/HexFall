@@ -113,6 +113,7 @@ namespace Gokyolcu
         {
             GameObject gameObject = new GameObject("World_Text", typeof(TextMesh));
             Transform transform = gameObject.transform;
+            transform.localScale = transform.localScale * .15f;
             transform.SetParent(parent, false);
             transform.localPosition = localPosition;
 

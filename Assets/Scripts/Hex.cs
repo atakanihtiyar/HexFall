@@ -22,4 +22,9 @@ public class Hex : MonoBehaviour
 
         transform.position = Grid.GetWorldPosition(x, y);
     }
+
+    public override string ToString()
+    {
+        return $"{X}, {Y}";
+    }
 }
