@@ -12,8 +12,11 @@ public class HexGrid : MonoBehaviour
     [SerializeField] private int height;
     [SerializeField] private float cellSize;
     [SerializeField] private Vector3 originPosition;
+
+    [SerializeField] private GameObject cellPrefab;
     private Hex[,] gridArray;
 
+    [SerializeField] private ColorPicker colorPicker;
     #endregion
 
     #region Grid Properties
@@ -51,7 +54,6 @@ public class HexGrid : MonoBehaviour
 
     #endregion
     
-
     public void Start()
     {
         InitGrid();
@@ -64,7 +66,11 @@ public class HexGrid : MonoBehaviour
         {
             for (int j = 0; j < Height; j++)
             {
-                gridArray[i, j] = new Hex(i, j, this); // Instantiate yapmak daha uygun gibi
+                GameObject newHexObject = Instantiate(cellPrefab, transform);
+                Hex newHex = newHexObject.GetComponent<Hex>();
+
+                newHex.InitHex(i, j, this, colorPicker.GetRandomColor());
+                gridArray[i, j] = newHex;
             }
         }
 
@@ -80,11 +86,9 @@ public class HexGrid : MonoBehaviour
 
     public Vector3 GetWorldPosition(int x, int y) 
     {
-        Hex hex = GetGridObject(x, y);
-
         Vector3 worldPosition = Vector3.zero;
-        worldPosition.x = CellSizeUnit * (3f / 2 * hex.X);
-        worldPosition.y = CellSizeUnit * (Mathf.Sqrt(3f) / 2 * hex.X + Mathf.Sqrt(3f) * hex.Y) - (CellHeightInUnit * (x / 2));
+        worldPosition.x = CellSizeUnit * (3f / 2 * x);
+        worldPosition.y = CellSizeUnit * (Mathf.Sqrt(3f) / 2 * x + Mathf.Sqrt(3f) * y) - (CellHeightInUnit * (x / 2));
 
         return worldPosition + OriginPosition; 
     }
