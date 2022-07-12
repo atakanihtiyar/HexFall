@@ -130,21 +130,12 @@ public class HexGrid : MonoBehaviour
 
     private void DrawAHex(Hex hex)
     {
-        // Find corners
-        Vector3 hexWorldPosition0 = GetWorldPosition(hex.X, hex.Y);
-        Vector3 hexWorldPosition1 = hexWorldPosition0 + new Vector3(CellWidthInUnit / 2, 0f);
-        Vector3 hexWorldPosition2 = hexWorldPosition1 + new Vector3(CellWidthInUnit / 4, CellHeightInUnit / 2);
-        Vector3 hexWorldPosition3 = hexWorldPosition2 + new Vector3(-CellWidthInUnit / 4, CellHeightInUnit / 2);
-        Vector3 hexWorldPosition4 = hexWorldPosition3 + new Vector3(-CellWidthInUnit / 2, 0f);
-        Vector3 hexWorldPosition5 = hexWorldPosition4 + new Vector3(-CellWidthInUnit / 4, -CellHeightInUnit / 2);
-
-        // Draw lines between corners
-        Debug.DrawLine(hexWorldPosition0, hexWorldPosition1, Color.white, DEBUG_DURATION);
-        Debug.DrawLine(hexWorldPosition1, hexWorldPosition2, Color.white, DEBUG_DURATION);
-        Debug.DrawLine(hexWorldPosition2, hexWorldPosition3, Color.white, DEBUG_DURATION);
-        Debug.DrawLine(hexWorldPosition3, hexWorldPosition4, Color.white, DEBUG_DURATION);
-        Debug.DrawLine(hexWorldPosition4, hexWorldPosition5, Color.white, DEBUG_DURATION);
-        Debug.DrawLine(hexWorldPosition5, hexWorldPosition0, Color.white, DEBUG_DURATION);
+        for (int i = 0; i < hex.Corners.Count; i++)
+        {
+            int from = i;
+            int to = i == hex.Corners.Count - 1 ? 0 : i + 1;
+            Debug.DrawLine(hex.Corners[from].WorldPosition, hex.Corners[to].WorldPosition, Color.white, DEBUG_DURATION);
+        }
     }
 
     private void WriteDebugText(int i, int j, Transform parent, string message = "")

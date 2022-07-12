@@ -94,6 +94,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7766275946644787704}
   - component: {fileID: 4138467190490937075}
+  - component: {fileID: 5382674165723268478}
   m_Layer: 0
   m_Name: Hex Cell
   m_TagString: Untagged
@@ -129,3 +130,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a0f42d0fbe9d8f4b89d5a508e6f94dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!60 &5382674165723268478
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7766275946644787707}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 0, y: 0}
+      - {x: 0.5, y: 0}
+      - {x: 0.75, y: 0.4375}
+      - {x: 0.5, y: 0.875}
+      - {x: 0, y: 0.875}
+      - {x: -0.25, y: 0.4375}
