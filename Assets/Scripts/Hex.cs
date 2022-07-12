@@ -136,6 +136,24 @@ public class Hex : MonoBehaviour
         return neighbours;
     }
 
+    public HexCorner GetNearestCorner(Vector3 worldPosition)
+    {
+        int nearestIndex = 0;
+        float nearestDistance = Vector3.Distance(worldPosition, Corners[0].WorldPosition);
+
+        for (int i = 1; i < Corners.Count; i++)
+        {
+            float currDistance = Vector3.Distance(worldPosition, Corners[i].WorldPosition);
+            if (currDistance < nearestDistance)
+            {
+                nearestIndex = i;
+                nearestDistance = currDistance;
+            }
+        }
+
+        return Corners[nearestIndex];
+    }
+
     #endregion
 
     public override string ToString()
