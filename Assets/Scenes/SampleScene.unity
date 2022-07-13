@@ -259,7 +259,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 8
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -425,7 +425,7 @@ MonoBehaviour:
   width: 8
   height: 9
   cellSize: 0.5
-  originPosition: {x: -3, y: -4, z: 0}
+  originPosition: {x: -2.9, y: -4, z: 0}
   colorPicker: {fileID: 1146227476}
   cellPrefab: {fileID: 7766275946644787707, guid: ba444afa628d3e147a136cf8cc54b564, type: 3}
   parentOfHexes: {fileID: 1818086738}
