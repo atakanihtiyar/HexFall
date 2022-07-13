@@ -13,16 +13,18 @@ public class TripletOperations : MonoBehaviour
 
         if (hexCell == null) // if there is no hex at the given position return null
         {
-            centerRotation = null;
+            PickedHexes = null;
             center = null;
+            centerRotation = null;
             return;
         }
 
         HexCorner nearestCorner = hexCell.GetNearestCorner(worldPosition);
         if (nearestCorner.Neighbours.Count < 2) // if the hex doesn't have enough neighbors return null
         {
-            centerRotation = null;
+            PickedHexes = null;
             center = null;
+            centerRotation = null;
             return;
         }
 
@@ -36,7 +38,12 @@ public class TripletOperations : MonoBehaviour
             }
         }
 
-        centerRotation = nearestCorner.Rotation;
         center = nearestCorner.WorldPosition;
+        centerRotation = nearestCorner.Rotation;
+    }
+
+    public void TurnPickedTriplet()
+    {
+        if (PickedHexes == null) return;
     }
 }

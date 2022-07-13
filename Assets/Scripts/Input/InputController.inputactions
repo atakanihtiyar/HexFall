@@ -6,7 +6,7 @@
             "id": "ced20488-5fc0-4206-ace9-397aa9ad5f38",
             "actions": [
                 {
-                    "name": "PickPosition",
+                    "name": "Position",
                     "type": "Value",
                     "id": "2156e146-1c09-41bb-a8b9-ccaa228735e5",
                     "expectedControlType": "",
@@ -15,7 +15,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Direction",
+                    "name": "Delta",
                     "type": "Value",
                     "id": "cb8beff8-b31a-490d-b450-af5569e4f6c0",
                     "expectedControlType": "",
@@ -24,7 +24,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Picked",
+                    "name": "Touched",
                     "type": "Button",
                     "id": "01864171-c71b-4924-8ebb-0276d7743c47",
                     "expectedControlType": "Button",
@@ -41,7 +41,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "PickPosition",
+                    "action": "Position",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -52,7 +52,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "PickPosition",
+                    "action": "Position",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -63,7 +63,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Direction",
+                    "action": "Delta",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -74,7 +74,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Direction",
+                    "action": "Delta",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -85,7 +85,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Picked",
+                    "action": "Touched",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -96,7 +96,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Picked",
+                    "action": "Touched",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

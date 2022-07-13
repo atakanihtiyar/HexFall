@@ -28,7 +28,7 @@ public partial class @InputController : IInputActionCollection2, IDisposable
             ""id"": ""ced20488-5fc0-4206-ace9-397aa9ad5f38"",
             ""actions"": [
                 {
-                    ""name"": ""PickPosition"",
+                    ""name"": ""Position"",
                     ""type"": ""Value"",
                     ""id"": ""2156e146-1c09-41bb-a8b9-ccaa228735e5"",
                     ""expectedControlType"": """",
@@ -37,7 +37,7 @@ public partial class @InputController : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Direction"",
+                    ""name"": ""Delta"",
                     ""type"": ""Value"",
                     ""id"": ""cb8beff8-b31a-490d-b450-af5569e4f6c0"",
                     ""expectedControlType"": """",
@@ -46,7 +46,7 @@ public partial class @InputController : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Picked"",
+                    ""name"": ""Touched"",
                     ""type"": ""Button"",
                     ""id"": ""01864171-c71b-4924-8ebb-0276d7743c47"",
                     ""expectedControlType"": ""Button"",
@@ -63,7 +63,7 @@ public partial class @InputController : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""PickPosition"",
+                    ""action"": ""Position"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -74,7 +74,7 @@ public partial class @InputController : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""PickPosition"",
+                    ""action"": ""Position"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -85,7 +85,7 @@ public partial class @InputController : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Direction"",
+                    ""action"": ""Delta"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -96,7 +96,7 @@ public partial class @InputController : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Direction"",
+                    ""action"": ""Delta"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -107,7 +107,7 @@ public partial class @InputController : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Picked"",
+                    ""action"": ""Touched"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -118,7 +118,7 @@ public partial class @InputController : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Picked"",
+                    ""action"": ""Touched"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -129,9 +129,9 @@ public partial class @InputController : IInputActionCollection2, IDisposable
 }");
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
-        m_Player_PickPosition = m_Player.FindAction("PickPosition", throwIfNotFound: true);
-        m_Player_Direction = m_Player.FindAction("Direction", throwIfNotFound: true);
-        m_Player_Picked = m_Player.FindAction("Picked", throwIfNotFound: true);
+        m_Player_Position = m_Player.FindAction("Position", throwIfNotFound: true);
+        m_Player_Delta = m_Player.FindAction("Delta", throwIfNotFound: true);
+        m_Player_Touched = m_Player.FindAction("Touched", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -191,16 +191,16 @@ public partial class @InputController : IInputActionCollection2, IDisposable
     // Player
     private readonly InputActionMap m_Player;
     private IPlayerActions m_PlayerActionsCallbackInterface;
-    private readonly InputAction m_Player_PickPosition;
-    private readonly InputAction m_Player_Direction;
-    private readonly InputAction m_Player_Picked;
+    private readonly InputAction m_Player_Position;
+    private readonly InputAction m_Player_Delta;
+    private readonly InputAction m_Player_Touched;
     public struct PlayerActions
     {
         private @InputController m_Wrapper;
         public PlayerActions(@InputController wrapper) { m_Wrapper = wrapper; }
-        public InputAction @PickPosition => m_Wrapper.m_Player_PickPosition;
-        public InputAction @Direction => m_Wrapper.m_Player_Direction;
-        public InputAction @Picked => m_Wrapper.m_Player_Picked;
+        public InputAction @Position => m_Wrapper.m_Player_Position;
+        public InputAction @Delta => m_Wrapper.m_Player_Delta;
+        public InputAction @Touched => m_Wrapper.m_Player_Touched;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -210,36 +210,36 @@ public partial class @InputController : IInputActionCollection2, IDisposable
         {
             if (m_Wrapper.m_PlayerActionsCallbackInterface != null)
             {
-                @PickPosition.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPickPosition;
-                @PickPosition.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPickPosition;
-                @PickPosition.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPickPosition;
-                @Direction.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDirection;
-                @Direction.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDirection;
-                @Direction.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDirection;
-                @Picked.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPicked;
-                @Picked.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPicked;
-                @Picked.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPicked;
+                @Position.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPosition;
+                @Position.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPosition;
+                @Position.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPosition;
+                @Delta.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDelta;
+                @Delta.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDelta;
+                @Delta.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDelta;
+                @Touched.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnTouched;
+                @Touched.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnTouched;
+                @Touched.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnTouched;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
             {
-                @PickPosition.started += instance.OnPickPosition;
-                @PickPosition.performed += instance.OnPickPosition;
-                @PickPosition.canceled += instance.OnPickPosition;
-                @Direction.started += instance.OnDirection;
-                @Direction.performed += instance.OnDirection;
-                @Direction.canceled += instance.OnDirection;
-                @Picked.started += instance.OnPicked;
-                @Picked.performed += instance.OnPicked;
-                @Picked.canceled += instance.OnPicked;
+                @Position.started += instance.OnPosition;
+                @Position.performed += instance.OnPosition;
+                @Position.canceled += instance.OnPosition;
+                @Delta.started += instance.OnDelta;
+                @Delta.performed += instance.OnDelta;
+                @Delta.canceled += instance.OnDelta;
+                @Touched.started += instance.OnTouched;
+                @Touched.performed += instance.OnTouched;
+                @Touched.canceled += instance.OnTouched;
             }
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
     public interface IPlayerActions
     {
-        void OnPickPosition(InputAction.CallbackContext context);
-        void OnDirection(InputAction.CallbackContext context);
-        void OnPicked(InputAction.CallbackContext context);
+        void OnPosition(InputAction.CallbackContext context);
+        void OnDelta(InputAction.CallbackContext context);
+        void OnTouched(InputAction.CallbackContext context);
     }
 }

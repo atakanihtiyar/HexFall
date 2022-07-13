@@ -9,9 +9,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform idlePosition;
 
     private InputController inputController;
-    private bool picked;
-    private Vector2 pickPosition;
-    private Vector2 direction;
+    private bool? touched;
+    private Vector2 position;
+    private Vector2 delta;
+    private float inputDeltaTime;
+    private const float limitInputDeltaTime = .11f;
 
     [SerializeField] private bool showDebug;
 
@@ -19,12 +21,16 @@ public class PlayerController : MonoBehaviour
     {
         inputController = new InputController();
 
-        inputController.Player.Picked.performed += ctx => picked = true;
-        inputController.Player.Picked.canceled += ctx => picked = false;
+        inputController.Player.Touched.performed += ctx =>
+        {
+            touched = true;
+            inputDeltaTime = 0f;
+        };
+        inputController.Player.Touched.canceled += ctx => touched = false;
 
-        inputController.Player.PickPosition.performed += ctx => pickPosition = ctx.ReadValue<Vector2>();
+        inputController.Player.Position.performed += ctx => position = ctx.ReadValue<Vector2>();
 
-        inputController.Player.Direction.performed += ctx => direction = ctx.ReadValue<Vector2>();
+        inputController.Player.Delta.performed += ctx => delta = ctx.ReadValue<Vector2>();
     }
 
     private void Start()
@@ -44,24 +50,43 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (picked)
+        if (!touched.HasValue) return;
+        
+        if (touched.Value) // Input started
         {
-            Debug.Log(direction);
-            Vector3 mousePosition = Utilities.ScreenToWorldPosition(pickPosition, Camera.main);
-            hexPicker.GetTriplet(mousePosition, out Vector3? center, out Quaternion? rotation);
-            if (center.HasValue && rotation.HasValue && hexPicker.PickedHexes.Count == 3)
+            inputDeltaTime += Time.deltaTime;
+        }
+        else // Input end
+        {
+            if (inputDeltaTime < limitInputDeltaTime) 
             {
-                transform.rotation = rotation.Value;
-                transform.position = center.Value;
+                PickTriplet();
             }
             else
             {
-                transform.rotation = Quaternion.identity;
-                transform.position = idlePosition.position;
+                hexPicker.TurnPickedTriplet();
             }
+            touched = null;
         }
 
         ShowDebug();
+    }
+
+    private void PickTriplet()
+    {
+        inputDeltaTime += Time.deltaTime;
+        Vector3 touchPosition = Utilities.ScreenToWorldPosition(position, Camera.main);
+        hexPicker.GetTriplet(touchPosition, out Vector3? center, out Quaternion? rotation);
+        if (center.HasValue && rotation.HasValue && hexPicker.PickedHexes.Count == 3)
+        {
+            transform.rotation = rotation.Value;
+            transform.position = center.Value;
+        }
+        else
+        {
+            transform.rotation = Quaternion.identity;
+            transform.position = idlePosition.position;
+        }
     }
 
     private void ShowDebug()
