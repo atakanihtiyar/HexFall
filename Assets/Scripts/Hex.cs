@@ -66,24 +66,13 @@ public class Hex : MonoBehaviour
             int cornerCount = CornerOffsetsTo0Corner.Length;
             for (int i = 0; i < cornerCount; i++)
             {
-                if (X % 2 == 0)
-                {
-                    List<Vector2Int> neighbours = GetNeighboursAt(i, neighbourOffsetsEvenColumns);
+                List<Hex> neighbours = X % 2 == 0 ? GetNeighboursAt(i, neighbourOffsetsEvenColumns) : GetNeighboursAt(i, neighbourOffsetsOddColumns);
 
-                    corners.Add(new HexCorner(
-                        originPosition + CornerOffsetsTo0Corner[i],
-                        neighbours
-                        ));
-                }
-                else
-                {
-                    List<Vector2Int> neighbours = GetNeighboursAt(i, neighbourOffsetsOddColumns);
-
-                    corners.Add(new HexCorner(
-                        originPosition + CornerOffsetsTo0Corner[i],
-                        neighbours
-                        ));
-                }
+                corners.Add(new HexCorner(
+                    originPosition + CornerOffsetsTo0Corner[i],
+                    Quaternion.Euler(0f, 0f, 60f * i),
+                    neighbours
+                    ));
             }
 
             return corners;
@@ -119,19 +108,19 @@ public class Hex : MonoBehaviour
         return new Vector3(Grid.CellWidthInUnit * .25f, Grid.CellHeightInUnit * .5f);
     }
 
-    private List<Vector2Int> GetNeighboursAt(int cornerIndex, Vector2Int[] neighbourOffsets)
+    private List<Hex> GetNeighboursAt(int cornerIndex, Vector2Int[] neighbourOffsets)
     {
         int i = cornerIndex % neighbourOffsets.Length;
         int j = (cornerIndex + 1) % neighbourOffsets.Length;
 
-        List<Vector2Int> neighbours = new List<Vector2Int>();
+        List<Hex> neighbours = new List<Hex>();
         Hex neighbour1 = Grid.GetGridObject(X + neighbourOffsets[i].x, Y + neighbourOffsets[i].y);
         if (neighbour1 != null)
-            neighbours.Add(neighbourOffsets[i]);
+            neighbours.Add(neighbour1);
 
         Hex neighbour2 = Grid.GetGridObject(X + neighbourOffsets[j].x, Y + neighbourOffsets[j].y);
         if (neighbour2 != null)
-            neighbours.Add(neighbourOffsets[j]);
+            neighbours.Add(neighbour2);
 
         return neighbours;
     }
@@ -165,11 +154,13 @@ public class Hex : MonoBehaviour
 public struct HexCorner
 {
     public Vector3 WorldPosition { get; private set; }
-    public List<Vector2Int> Neighbours { get; private set; }
+    public Quaternion Rotation { get; private set; }
+    public List<Hex> Neighbours { get; private set; }
 
-    public HexCorner(Vector3 worldPosition, List<Vector2Int> neighbours)
+    public HexCorner(Vector3 worldPosition, Quaternion rotation, List<Hex> neighbours)
     {
         WorldPosition = worldPosition;
+        Rotation = rotation;
         Neighbours = neighbours;
     }
 }

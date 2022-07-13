@@ -5,35 +5,42 @@ using Gokyolcu;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private HexGrid grid;
+    [SerializeField] private TripletOperations hexPicker;
+    [SerializeField] private Transform idlePosition;
 
     [SerializeField] private bool showDebug;
+
+    private void Start()
+    {
+        transform.position = idlePosition.position;
+    }
 
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Hex hexCell = grid.GetGridObject(Utilities.GetMouseWorldPositionWithoutZ());
-
-            if (showDebug)
-                ShowDebug(hexCell);
+            Vector3 mousePosition = Utilities.GetMouseWorldPositionWithoutZ();
+            hexPicker.GetTriplet(mousePosition, out Vector3? center, out Quaternion? rotation);
+            if (center.HasValue && rotation.HasValue && hexPicker.PickedHexes.Count == 3)
+            {
+                transform.rotation = rotation.Value;
+                transform.position = center.Value;
+            }
+            else
+            {
+                transform.rotation = Quaternion.identity;
+                transform.position = idlePosition.position;
+            }
         }
+
+        ShowDebug();
     }
 
-    private void ShowDebug(Hex hexCell)
+    private void ShowDebug()
     {
-        List<HexCorner> hexCorners = hexCell.Corners;
-        for (int cornerIndex = 0; cornerIndex < hexCorners.Count; cornerIndex++)
+        if (showDebug)
         {
-            for (int neighbourIndex = 0; neighbourIndex < hexCorners[cornerIndex].Neighbours.Count; neighbourIndex++)
-            {
-                Debug.DrawLine(Utilities.GetMouseWorldPositionWithoutZ(),
-                    grid.GetGridObject(hexCell.X + hexCorners[cornerIndex].Neighbours[neighbourIndex].x, hexCell.Y + hexCorners[cornerIndex].Neighbours[neighbourIndex].y).GetCenter(),
-                    Color.black, 100f);
 
-                Debug.Log($"i: {cornerIndex}");
-                Debug.Log($"x1: {hexCorners[cornerIndex].Neighbours[neighbourIndex].x}, y1: {hexCorners[cornerIndex].Neighbours[neighbourIndex].y}");
-            }
         }
     }
 }
