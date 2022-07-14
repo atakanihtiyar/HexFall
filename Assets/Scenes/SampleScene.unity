@@ -416,14 +416,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e1bca23eda14c8418fafbb98445f83e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  colorPicker: {fileID: 1146227476}
+  parentOfHexes: {fileID: 1818086738}
+  cellPrefab: {fileID: 7766275946644787707, guid: ba444afa628d3e147a136cf8cc54b564, type: 3}
   width: 8
   height: 9
-  cellSize: 0.5
+  cellSizeInUnit: 0.5
   originPosition: {x: -2.9, y: -4, z: 0}
-  colorPicker: {fileID: 1146227476}
-  cellPrefab: {fileID: 7766275946644787707, guid: ba444afa628d3e147a136cf8cc54b564, type: 3}
-  parentOfHexes: {fileID: 1818086738}
-  showCellDebugTexts: 1
+  showCellDebugTexts: 0
   showCellDebugLines: 0
 --- !u!114 &1146227476
 MonoBehaviour:
@@ -681,7 +681,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hexPicker: {fileID: 1146227477}
   idlePosition: {fileID: 1256757327}
-  showDebug: 0
 --- !u!4 &1808331969
 Transform:
   m_ObjectHideFlags: 0

@@ -5,9 +5,35 @@ using Gokyolcu.CharacterMovement;
 
 public class Hex : MonoBehaviour
 {
-    // Positioning
+    #region Fields and Properties
+
+    // Related components and objects
+    private IMoveToPosition movement;
+    private SpriteRenderer spriteRenderer;
+
+    public HexGrid Grid { get; private set; }
+
     public int X { get; private set; }
     public int Y { get; private set; }
+
+    private Color colorType;
+    public Color ColorType
+    {
+        get
+        {
+            return colorType;
+        }
+        set
+        {
+            if (spriteRenderer == null)
+                spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+            if (spriteRenderer != null)
+                spriteRenderer.color = value;
+
+            colorType = value;
+        }
+    }
 
     #region Corners
 
@@ -35,7 +61,7 @@ public class Hex : MonoBehaviour
     }
 
     // Neighbour XY offsets
-    private readonly Vector2Int[] neighbourOffsetsEvenColumns = new Vector2Int[6]
+    private readonly Vector2Int[] neighbourOffsetsWhenEvenColumns = new Vector2Int[6]
     {
             new Vector2Int(-1, -1), // Bottom Left
             new Vector2Int(0, -1), // Bottom
@@ -44,7 +70,7 @@ public class Hex : MonoBehaviour
             new Vector2Int(0, 1), // Up
             new Vector2Int(-1, 0), // Upper Left
     };
-    private readonly Vector2Int[] neighbourOffsetsOddColumns = new Vector2Int[6]
+    private readonly Vector2Int[] neighbourOffsetsWhenOddColumns = new Vector2Int[6]
     {
             new Vector2Int(-1, 0), // Bottom Left
             new Vector2Int(0, -1), // Bottom
@@ -78,31 +104,7 @@ public class Hex : MonoBehaviour
 
     #endregion
 
-    private Color colorType;
-    public Color ColorType 
-    { 
-        get
-        {
-            return colorType;
-        }
-        set
-        {
-            if (spriteRenderer == null)
-                spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-
-            spriteRenderer.color = value;
-            colorType = value;
-        }
-    }
-    public HexGrid Grid { get; private set; }
-
-    private IMoveToPosition movement;
-    private SpriteRenderer spriteRenderer;
-
-    private void Start()
-    {
-        movement = GetComponent<IMoveToPosition>();
-    }
+    #endregion
 
     public void InitHex(int x, int y, HexGrid grid)
     {
@@ -110,24 +112,25 @@ public class Hex : MonoBehaviour
         Y = y;
         Grid = grid;
 
-        transform.position = Grid.GetWorldPosition(x, y);
+        movement = GetComponent<IMoveToPosition>();
+        GoTo(x, y);
     }
 
     #region Getters
 
     public Vector3 GetCenter()
     {
-        return transform.position + new Vector3(Grid.CellWidthInUnit * .25f, Grid.CellHeightInUnit * .5f);
+        return transform.position + GetCenterOffsetTo0Corner();
     }
 
-    public Vector3 GetCenterOffset()
+    public Vector3 GetCenterOffsetTo0Corner()
     {
         return new Vector3(Grid.CellWidthInUnit * .25f, Grid.CellHeightInUnit * .5f);
     }
 
-    public List<Hex> GetNeighboursAt(int cornerIndex)
+    private List<Hex> GetNeighboursAt(int cornerIndex)
     {
-        Vector2Int[] neighbourOffsets = X % 2 == 0 ? neighbourOffsetsEvenColumns : neighbourOffsetsOddColumns;
+        Vector2Int[] neighbourOffsets = X % 2 == 0 ? neighbourOffsetsWhenEvenColumns : neighbourOffsetsWhenOddColumns;
         int i = cornerIndex % neighbourOffsets.Length;
         int j = (cornerIndex + 1) % neighbourOffsets.Length;
 
@@ -139,7 +142,6 @@ public class Hex : MonoBehaviour
         Hex neighbour2 = Grid.GetGridObject(X + neighbourOffsets[j].x, Y + neighbourOffsets[j].y);
         if (neighbour2 != null)
             neighbours.Add(neighbour2);
-
 
         return neighbours;
     }
@@ -164,9 +166,11 @@ public class Hex : MonoBehaviour
 
     #endregion
 
+    #region Misc
+
     public void GoTo(int x, int y)
     {
-        movement.SetToPosition(Grid.GetWorldPosition(x, y));
+        movement?.SetToPosition(Grid.GetWorldPosition(x, y));
         X = x;
         Y = y;
     }
@@ -198,6 +202,8 @@ public class Hex : MonoBehaviour
     {
         return $"{X}, {Y}";
     }
+
+    #endregion
 }
 
 public struct HexCorner

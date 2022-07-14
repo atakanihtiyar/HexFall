@@ -4,28 +4,33 @@ using UnityEngine;
 
 public class TripletOperations : MonoBehaviour
 {
+    #region Fields and Properties
+
+    // Related components and objects
     [SerializeField] private HexGrid grid;
+
+    public State CurrentState { get; private set; }
+
     public List<Hex> PickedHexes { get; private set; }
     public Vector3 Center { get; private set; }
     public Quaternion Rotation { get; private set; }
 
-    public State CurrentState { get; private set; }
-
     private Coroutine turnCoroutine;
 
-    public bool FindTriplet(Vector3 worldPosition)
+    #endregion
+
+    #region Find
+
+    public bool? FindTriplet(Vector3 worldPosition)
     {
-        if (CurrentState == State.Busy) return false;
+        if (CurrentState == State.Busy) return null;
         CurrentState = State.Busy;
 
         // if there is no hex at the given position return null
         Hex hexCell = grid.GetGridObject(worldPosition);
-        if (hexCell == null) 
+        if (hexCell == null)
         {
-            PickedHexes = null;
-            Center = Vector3.zero;
-            Rotation = Quaternion.identity;
-            CurrentState = State.Available;
+            ResetPickedHexes();
             return false;
         }
 
@@ -33,10 +38,7 @@ public class TripletOperations : MonoBehaviour
         HexCorner nearestCorner = hexCell.GetNearestCorner(worldPosition);
         if (nearestCorner.Neighbours.Count < 2)
         {
-            PickedHexes = null;
-            Center = Vector3.zero;
-            Rotation = Quaternion.identity;
-            CurrentState = State.Available;
+            ResetPickedHexes();
             return false;
         }
 
@@ -59,6 +61,18 @@ public class TripletOperations : MonoBehaviour
         return true;
     }
 
+    private void ResetPickedHexes()
+    {
+        PickedHexes = null;
+        Center = Vector3.zero;
+        Rotation = Quaternion.identity;
+        CurrentState = State.Available;
+    }
+
+    #endregion
+
+    #region Turn
+
     public void TurnPickedTriplet(bool isClockwise)
     {
         if (PickedHexes == null || CurrentState == State.Busy) return;
@@ -73,8 +87,15 @@ public class TripletOperations : MonoBehaviour
         for (int i = 0; i < PickedHexes.Count; i++)
         {
             yield return TakeATurn(isClockwise); // Iterate
-            Debug.Log(CheckExplode()); // Check
-            // Explode
+
+            bool canExplode = CheckExplode(); // Check
+            Debug.Log(canExplode);
+
+            if (canExplode)
+            {
+                // Explode
+                break;
+            }
         }
 
         turnCoroutine = null; 
@@ -83,22 +104,12 @@ public class TripletOperations : MonoBehaviour
 
     private IEnumerator TakeATurn(bool isClockwise)
     {
-        if (isClockwise)
+        int pivotIndex = isClockwise ? 0 : PickedHexes.Count - 1;
+        for (int i = 1; i < PickedHexes.Count; i++)
         {
-            for (int i = 1; i < PickedHexes.Count; i++)
-            {
-                grid.SwitchHexes(PickedHexes[0], PickedHexes[i]);
-            }
+            int directionalIndex = isClockwise ? i : PickedHexes.Count - 1 - i;
+            grid.SwitchHexes(PickedHexes[pivotIndex], PickedHexes[directionalIndex]);
         }
-        else
-        {
-            for (int i = 1; i < PickedHexes.Count; i++)
-            {
-                int reverseI = PickedHexes.Count - 1 - i;
-                grid.SwitchHexes(PickedHexes[2], PickedHexes[reverseI]);
-            }
-        }
-
         yield return new WaitForSeconds(.5f);
     }
 
@@ -111,6 +122,8 @@ public class TripletOperations : MonoBehaviour
         }
         return false;
     }
+
+    #endregion
 
     public enum State
     {

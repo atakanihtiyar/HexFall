@@ -6,7 +6,7 @@ namespace Gokyolcu.CharacterMovement
 {
     public class MoveToPositionDirect : MonoBehaviour, IMoveToPosition
     {
-        private const float MIN_VALUE = .01f;
+        private const float MIN_VALUE = .02f;
         private IMoveVelocity moveVelocity;
         private Vector3 toPosition;
         private bool canMove;
@@ -25,6 +25,7 @@ namespace Gokyolcu.CharacterMovement
             }
             else
             {
+                transform.position = toPosition;
                 moveVelocity.SetVelocity(Vector3.zero);
                 canMove = false;
             }

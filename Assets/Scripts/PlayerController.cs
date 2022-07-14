@@ -5,30 +5,29 @@ using Gokyolcu;
 
 public class PlayerController : MonoBehaviour
 {
+    #region Fields and Properties
+
+    // Related components and objects
     [SerializeField] private TripletOperations hexPicker;
     [SerializeField] private Transform idlePosition;
 
+    // Input
     private InputController inputController;
-    private bool touched;
-    private Vector2 position;
-    private Vector2 delta;
+    private bool isTouched;
+    private Vector2 touchPosition;
+    private Vector2 touchDelta;
 
-    [SerializeField] private bool showDebug;
+    #endregion
 
     private void Awake()
     {
+        transform.position = idlePosition.position;
+
         inputController = new InputController();
 
-        inputController.Player.Touched.canceled += ctx => touched = true;
-
-        inputController.Player.Position.performed += ctx => position = Utilities.ScreenToWorldPosition(ctx.ReadValue<Vector2>(), Camera.main);
-
-        inputController.Player.Delta.performed += ctx => delta = ctx.ReadValue<Vector2>();
-    }
-
-    private void Start()
-    {
-        transform.position = idlePosition.position;
+        inputController.Player.Touched.canceled += ctx => isTouched = true;
+        inputController.Player.Position.performed += ctx => touchPosition = Utilities.ScreenToWorldPosition(ctx.ReadValue<Vector2>(), Camera.main);
+        inputController.Player.Delta.performed += ctx => touchDelta = ctx.ReadValue<Vector2>();
     }
 
     private void OnEnable()
@@ -43,27 +42,24 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (!touched)
+        if (!isTouched) // No touch
             return;
 
-        if (delta.magnitude > 4f)
+        if (touchDelta.magnitude > 4f) // swipe
         {
-            if (position.y > hexPicker.Center.y) // if touch above picked hexes
-            {
-                TurnTriplet(delta.x < 0 ? false : true); // clockwise if delta.x positive otherwise counter clockwise
-            }
-            else // if touch under picked hexes
-            {
-                TurnTriplet(delta.x < 0 ? true : false); // counter clockwise if delta.x positive otherwise clockwise
-            }
-        }
-        else
-        {
-            PickTriplet();
-        }
-        touched = false;
+            bool isClockwise;
+            if (touchPosition.y > hexPicker.Center.y)
+                isClockwise = touchDelta.x < 0 ? false : true;
+            else
+                isClockwise = touchDelta.x < 0 ? true : false;
 
-        ShowDebug();
+            TurnTriplet(isClockwise);
+        }
+        else // touch
+        {
+            PickTriplet(touchPosition);
+        }
+        isTouched = false;
     }
 
     private void TurnTriplet(bool isClockwise)
@@ -71,12 +67,12 @@ public class PlayerController : MonoBehaviour
         hexPicker.TurnPickedTriplet(isClockwise);
     }
 
-    private void PickTriplet()
+    private void PickTriplet(Vector3 worldPosition)
     {
-        if (hexPicker.CurrentState == TripletOperations.State.Busy) return;
+        bool? foundTriplet = hexPicker.FindTriplet(worldPosition);
+        if (!foundTriplet.HasValue) return;
 
-        bool foundTriplet = hexPicker.FindTriplet(position);
-        if (foundTriplet)
+        if (foundTriplet.Value)
         {
             transform.rotation = hexPicker.Rotation;
             transform.position = hexPicker.Center;
@@ -85,14 +81,6 @@ public class PlayerController : MonoBehaviour
         {
             transform.rotation = Quaternion.identity;
             transform.position = idlePosition.position;
-        }
-    }
-
-    private void ShowDebug()
-    {
-        if (showDebug)
-        {
-
         }
     }
 }

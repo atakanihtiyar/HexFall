@@ -5,28 +5,24 @@ using static Gokyolcu.Utilities;
 
 public class HexGrid : MonoBehaviour
 {
+    #region Fields and Properties
+
     private const float DEBUG_DURATION = 100f;
 
-    #region Grid Fields
-    
+    // Related components and objects
+    [SerializeField] private ColorPicker colorPicker;
+    [SerializeField] private Transform parentOfHexes;
+    [SerializeField] private GameObject cellPrefab;
+
+    // Base fields
     [SerializeField] private int width;
     [SerializeField] private int height;
-    [SerializeField] private float cellSize;
+    [SerializeField] private float cellSizeInUnit;
     [SerializeField] private Vector3 originPosition;
 
-    [SerializeField] private ColorPicker colorPicker;
-    [SerializeField] private GameObject cellPrefab;
     private Hex[,] gridArray;
-    [SerializeField] private Transform parentOfHexes;
 
-    [SerializeField] private bool showCellDebugTexts;
-    [SerializeField] private bool showCellDebugLines;
-    private TextMesh[,] debugTextArray;
-
-    #endregion
-
-    #region Grid Properties
-
+    // Base properties
     public int Width
     {
         get => width;
@@ -37,38 +33,40 @@ public class HexGrid : MonoBehaviour
         get => height;
         private set => height = value;
     }
-    public Vector3 OriginPosition 
-    { 
-        get => originPosition; 
-        private set => originPosition = value; 
+    public Vector3 OriginPosition
+    {
+        get => originPosition;
+        private set => originPosition = value;
+    }
+    public float CellSizeInUnit
+    {
+        get => cellSizeInUnit;
+        private set => cellSizeInUnit = value;
     }
 
-    // Cell Sizing
-    public float CellSizeUnit
-    {
-        get => cellSize;
-        private set => cellSize = value;
-    }
+    // Generated cell sizes
     public float CellWidthInUnit
     {
-        get => 2 * CellSizeUnit;
+        get => 2 * CellSizeInUnit;
     }
     public float CellHeightInUnit
     {
-        get => Mathf.Sqrt(3) * CellSizeUnit;
+        get => Mathf.Sqrt(3) * CellSizeInUnit;
     }
+
+    #region Debug
+
+    [SerializeField] private bool showCellDebugTexts;
+    [SerializeField] private bool showCellDebugLines;
+    private TextMesh[,] debugTextArray;
+
+    #endregion
 
     #endregion
 
     public void Start()
     {
-        InitGrid();
-    }
-
-    private void InitGrid()
-    {
         gridArray = new Hex[Width, Height];
-        debugTextArray = new TextMesh[Width, Height];
 
         for (int i = 0; i < Width; i++)
         {
@@ -94,7 +92,8 @@ public class HexGrid : MonoBehaviour
 
     public Hex GetGridObject(int x, int y)
     {
-        return (x < 0 || y < 0 || x >= Width || y >= Height) ? null : gridArray[x, y];
+        bool inRange = x < 0 || y < 0 || x >= Width || y >= Height;
+        return inRange ? null : gridArray[x, y];
     }
     
     public Hex GetGridObject(Vector3 worldPosition)
@@ -106,8 +105,8 @@ public class HexGrid : MonoBehaviour
     public Vector3 GetWorldPosition(int x, int y) 
     {
         Vector3 worldPosition = Vector3.zero;
-        worldPosition.x = CellSizeUnit * (3f / 2 * x);
-        worldPosition.y = CellSizeUnit * (Mathf.Sqrt(3f) / 2 * x + Mathf.Sqrt(3f) * y) - (CellHeightInUnit * (x / 2));
+        worldPosition.x = CellSizeInUnit * (3f / 2 * x);
+        worldPosition.y = CellSizeInUnit * (Mathf.Sqrt(3f) / 2 * x + Mathf.Sqrt(3f) * y) - (CellHeightInUnit * (x / 2));
 
         return worldPosition + OriginPosition; 
     }
@@ -116,11 +115,13 @@ public class HexGrid : MonoBehaviour
     {
         Vector3 offsetedWorldPosition = worldPosition - originPosition - new Vector3(CellWidthInUnit * .25f, CellHeightInUnit * .5f);
 
-        x = Mathf.RoundToInt((offsetedWorldPosition.x / CellSizeUnit) * 2f / 3);
-        y = Mathf.RoundToInt((((offsetedWorldPosition.y + CellHeightInUnit * (x / 2)) / CellSizeUnit) - Mathf.Sqrt(3f) / 2 * x) / Mathf.Sqrt(3f));
+        x = Mathf.RoundToInt((offsetedWorldPosition.x / CellSizeInUnit) * 2f / 3);
+        y = Mathf.RoundToInt((((offsetedWorldPosition.y + CellHeightInUnit * (x / 2)) / CellSizeInUnit) - Mathf.Sqrt(3f) / 2 * x) / Mathf.Sqrt(3f));
     }
 
     #endregion
+
+    #region Misc
 
     public void SwitchHexes(Hex hex1, Hex hex2)
     {
@@ -132,6 +133,8 @@ public class HexGrid : MonoBehaviour
         hex1.GoTo(hex2.X, hex2.Y);
         hex2.GoTo(tempX, tempY);
     }
+
+    #endregion
 
     #region Debug
 
@@ -156,10 +159,13 @@ public class HexGrid : MonoBehaviour
 
     private void WriteDebugText(int i, int j, Transform parent, string message = "")
     {
+        if (debugTextArray == null)
+            debugTextArray = new TextMesh[Width, Height];
+
         debugTextArray[i, j] = CreateWorldText(
             message,
             parent,
-            gridArray[i, j].GetCenterOffset(),
+            gridArray[i, j].GetCenterOffsetTo0Corner(),
             14,
             Color.black,
             TextAnchor.MiddleCenter
