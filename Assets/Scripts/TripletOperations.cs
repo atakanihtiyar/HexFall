@@ -25,6 +25,7 @@ public class TripletOperations : MonoBehaviour
             PickedHexes = null;
             Center = Vector3.zero;
             Rotation = Quaternion.identity;
+            CurrentState = State.Available;
             return false;
         }
 
@@ -35,6 +36,7 @@ public class TripletOperations : MonoBehaviour
             PickedHexes = null;
             Center = Vector3.zero;
             Rotation = Quaternion.identity;
+            CurrentState = State.Available;
             return false;
         }
 

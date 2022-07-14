@@ -77,8 +77,13 @@ public class HexGrid : MonoBehaviour
                 GameObject newHexObject = Instantiate(cellPrefab, parentOfHexes);
                 Hex newHex = newHexObject.GetComponent<Hex>();
 
-                newHex.InitHex(i, j, this, colorPicker.GetRandomColor());
+                newHex.InitHex(i, j, this);
                 gridArray[i, j] = newHex;
+
+                do
+                {
+                    newHex.ColorType = colorPicker.GetRandomColor();
+                } while (newHex.CheckExplode());
 
                 ShowDebug(i, j);
             }
@@ -87,8 +92,8 @@ public class HexGrid : MonoBehaviour
 
     #region Getters
 
-    public Hex GetGridObject(int x, int y) 
-    { 
+    public Hex GetGridObject(int x, int y)
+    {
         return (x < 0 || y < 0 || x >= Width || y >= Height) ? null : gridArray[x, y];
     }
     

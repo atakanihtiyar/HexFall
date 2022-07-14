@@ -55,15 +55,13 @@ public class Hex : MonoBehaviour
     };
 
     // Corners
-    List<HexCorner> corners = null;
     public List<HexCorner> Corners
     {
         get
         {
             Vector3 originPosition = Grid.GetWorldPosition(X, Y);
-            if (corners != null && corners[0].WorldPosition == originPosition) return corners;
 
-            corners = new List<HexCorner>();
+            List<HexCorner> corners = new List<HexCorner>();
             int cornerCount = CornerOffsetsTo0Corner.Length;
             for (int i = 0; i < cornerCount; i++)
             {
@@ -80,24 +78,37 @@ public class Hex : MonoBehaviour
 
     #endregion
 
-    public Color ColorType { get; private set; }
+    private Color colorType;
+    public Color ColorType 
+    { 
+        get
+        {
+            return colorType;
+        }
+        set
+        {
+            if (spriteRenderer == null)
+                spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+            spriteRenderer.color = value;
+            colorType = value;
+        }
+    }
     public HexGrid Grid { get; private set; }
 
-    public IMoveToPosition movement;
+    private IMoveToPosition movement;
+    private SpriteRenderer spriteRenderer;
 
     private void Start()
     {
         movement = GetComponent<IMoveToPosition>();
     }
 
-    public void InitHex(int x, int y, HexGrid grid, Color color)
+    public void InitHex(int x, int y, HexGrid grid)
     {
         X = x;
         Y = y;
         Grid = grid;
-
-        ColorType = color;
-        GetComponentInChildren<SpriteRenderer>().color = ColorType;
 
         transform.position = Grid.GetWorldPosition(x, y);
     }
@@ -129,6 +140,7 @@ public class Hex : MonoBehaviour
         if (neighbour2 != null)
             neighbours.Add(neighbour2);
 
+
         return neighbours;
     }
 
@@ -159,22 +171,27 @@ public class Hex : MonoBehaviour
         Y = y;
     }
 
-    public bool CheckExplode()
+    public bool CheckExplode(Color color)
     {
         foreach (HexCorner corner in Corners)
         {
-            if (corner.Neighbours.Count < 2) return false;
+            if (corner.Neighbours.Count < 2) continue;
 
             int sameColoredNeighboursCount = 0;
             for (int i = 0; i < corner.Neighbours.Count; i++)
             {
-                if (corner.Neighbours[i].ColorType == ColorType) 
+                if (corner.Neighbours[i].ColorType == color)
                     sameColoredNeighboursCount++;
             }
             if (sameColoredNeighboursCount == corner.Neighbours.Count)
                 return true;
         }
         return false;
+    }
+
+    public bool CheckExplode()
+    {
+        return CheckExplode(ColorType);
     }
 
     public override string ToString()
