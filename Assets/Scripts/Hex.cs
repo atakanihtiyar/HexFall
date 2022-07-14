@@ -159,6 +159,24 @@ public class Hex : MonoBehaviour
         Y = y;
     }
 
+    public bool CheckExplode()
+    {
+        foreach (HexCorner corner in Corners)
+        {
+            if (corner.Neighbours.Count < 2) return false;
+
+            int sameColoredNeighboursCount = 0;
+            for (int i = 0; i < corner.Neighbours.Count; i++)
+            {
+                if (corner.Neighbours[i].ColorType == ColorType) 
+                    sameColoredNeighboursCount++;
+            }
+            if (sameColoredNeighboursCount == corner.Neighbours.Count)
+                return true;
+        }
+        return false;
+    }
+
     public override string ToString()
     {
         return $"{X}, {Y}";

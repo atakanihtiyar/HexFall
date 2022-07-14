@@ -71,7 +71,7 @@ public class TripletOperations : MonoBehaviour
         for (int i = 0; i < PickedHexes.Count; i++)
         {
             yield return TakeATurn(isClockwise); // Iterate
-            // Check
+            Debug.Log(CheckExplode()); // Check
             // Explode
         }
 
@@ -98,6 +98,16 @@ public class TripletOperations : MonoBehaviour
         }
 
         yield return new WaitForSeconds(.5f);
+    }
+
+    private bool CheckExplode()
+    {
+        foreach (Hex hex in PickedHexes)
+        {
+            if (hex.CheckExplode())
+                return true;
+        }
+        return false;
     }
 
     public enum State
