@@ -93,6 +93,8 @@ GameObject:
   - component: {fileID: 7766275946644787704}
   - component: {fileID: 4138467190490937075}
   - component: {fileID: 5382674165723268478}
+  - component: {fileID: 7204802030394048966}
+  - component: {fileID: 4478397884460058995}
   m_Layer: 0
   m_Name: Hex Cell
   m_TagString: Untagged
@@ -158,3 +160,28 @@ PolygonCollider2D:
       - {x: 0.5, y: 0.875}
       - {x: 0, y: 0.875}
       - {x: -0.25, y: 0.4375}
+--- !u!114 &7204802030394048966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7766275946644787707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34ef0b279ec5bc342b78581760db2270, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 5
+--- !u!114 &4478397884460058995
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7766275946644787707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0737e7e43374188459a7fd94466c3865, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

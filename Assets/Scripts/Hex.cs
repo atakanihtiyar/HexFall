@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Gokyolcu.CharacterMovement;
 
 public class Hex : MonoBehaviour
 {
@@ -82,6 +83,13 @@ public class Hex : MonoBehaviour
     public Color ColorType { get; private set; }
     public HexGrid Grid { get; private set; }
 
+    public IMoveToPosition movement;
+
+    private void Start()
+    {
+        movement = GetComponent<IMoveToPosition>();
+    }
+
     public void InitHex(int x, int y, HexGrid grid, Color color)
     {
         X = x;
@@ -143,6 +151,13 @@ public class Hex : MonoBehaviour
     }
 
     #endregion
+
+    public void GoTo(int x, int y)
+    {
+        movement.SetToPosition(Grid.GetWorldPosition(x, y));
+        X = x;
+        Y = y;
+    }
 
     public override string ToString()
     {
