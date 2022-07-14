@@ -9,11 +9,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform idlePosition;
 
     private InputController inputController;
-    private bool? touched;
+    private bool touched;
     private Vector2 position;
     private Vector2 delta;
-    private float inputDeltaTime;
-    private const float limitInputDeltaTime = .11f;
 
     [SerializeField] private bool showDebug;
 
@@ -21,12 +19,7 @@ public class PlayerController : MonoBehaviour
     {
         inputController = new InputController();
 
-        inputController.Player.Touched.performed += ctx =>
-        {
-            touched = true;
-            inputDeltaTime = 0f;
-        };
-        inputController.Player.Touched.canceled += ctx => touched = false;
+        inputController.Player.Touched.canceled += ctx => touched = true;
 
         inputController.Player.Position.performed += ctx => position = ctx.ReadValue<Vector2>();
 
@@ -50,24 +43,18 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (!touched.HasValue) return;
-        
-        if (touched.Value) // Input started
+        if (touched) // Input started
         {
-            inputDeltaTime += Time.deltaTime;
-        }
-        else // Input end
-        {
-            if (inputDeltaTime < limitInputDeltaTime) 
+            if (delta.magnitude > 4f)
             {
-                PickTriplet();
+                // Turn the picked triplet
+                Debug.Log("turn: " + delta);
             }
             else
             {
-                // Turn the picked triplet
-                hexPicker.TurnPickedTriplet();
+                PickTriplet();
             }
-            touched = null;
+            touched = false;
         }
 
         ShowDebug();
@@ -75,7 +62,6 @@ public class PlayerController : MonoBehaviour
 
     private void PickTriplet()
     {
-        inputDeltaTime += Time.deltaTime;
         Vector3 touchPosition = Utilities.ScreenToWorldPosition(position, Camera.main);
         bool foundTriplet = hexPicker.FindTriplet(touchPosition);
         if (foundTriplet)

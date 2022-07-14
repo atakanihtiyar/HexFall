@@ -83,7 +83,7 @@ public partial class @InputController : IInputActionCollection2, IDisposable
                     ""id"": ""cc30d43f-1d02-45c7-9265-437ae4cd52b1"",
                     ""path"": ""<Mouse>/delta"",
                     ""interactions"": """",
-                    ""processors"": """",
+                    ""processors"": ""ScaleVector2(x=4,y=4)"",
                     ""groups"": """",
                     ""action"": ""Delta"",
                     ""isComposite"": false,
