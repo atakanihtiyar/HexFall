@@ -64,6 +64,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
+                // Turn the picked triplet
                 hexPicker.TurnPickedTriplet();
             }
             touched = null;
@@ -76,11 +77,11 @@ public class PlayerController : MonoBehaviour
     {
         inputDeltaTime += Time.deltaTime;
         Vector3 touchPosition = Utilities.ScreenToWorldPosition(position, Camera.main);
-        hexPicker.GetTriplet(touchPosition, out Vector3? center, out Quaternion? rotation);
-        if (center.HasValue && rotation.HasValue && hexPicker.PickedHexes.Count == 3)
+        bool foundTriplet = hexPicker.FindTriplet(touchPosition);
+        if (foundTriplet)
         {
-            transform.rotation = rotation.Value;
-            transform.position = center.Value;
+            transform.rotation = hexPicker.Rotation;
+            transform.position = hexPicker.Center;
         }
         else
         {

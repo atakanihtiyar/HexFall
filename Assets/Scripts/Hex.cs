@@ -66,12 +66,10 @@ public class Hex : MonoBehaviour
             int cornerCount = CornerOffsetsTo0Corner.Length;
             for (int i = 0; i < cornerCount; i++)
             {
-                List<Hex> neighbours = X % 2 == 0 ? GetNeighboursAt(i, neighbourOffsetsEvenColumns) : GetNeighboursAt(i, neighbourOffsetsOddColumns);
-
                 corners.Add(new HexCorner(
                     originPosition + CornerOffsetsTo0Corner[i],
                     Quaternion.Euler(0f, 0f, 60f * i),
-                    neighbours
+                    GetNeighboursAt(i)
                     ));
             }
 
@@ -108,8 +106,9 @@ public class Hex : MonoBehaviour
         return new Vector3(Grid.CellWidthInUnit * .25f, Grid.CellHeightInUnit * .5f);
     }
 
-    private List<Hex> GetNeighboursAt(int cornerIndex, Vector2Int[] neighbourOffsets)
+    public List<Hex> GetNeighboursAt(int cornerIndex)
     {
+        Vector2Int[] neighbourOffsets = X % 2 == 0 ? neighbourOffsetsEvenColumns : neighbourOffsetsOddColumns;
         int i = cornerIndex % neighbourOffsets.Length;
         int j = (cornerIndex + 1) % neighbourOffsets.Length;
 
