@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour
 
         inputController.Player.Touched.canceled += ctx => touched = true;
 
-        inputController.Player.Position.performed += ctx => position = ctx.ReadValue<Vector2>();
+        inputController.Player.Position.performed += ctx => position = Utilities.ScreenToWorldPosition(ctx.ReadValue<Vector2>(), Camera.main);
 
         inputController.Player.Delta.performed += ctx => delta = ctx.ReadValue<Vector2>();
     }
@@ -43,27 +43,39 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (touched) // Input started
+        if (!touched)
+            return;
+
+        if (delta.magnitude > 4f)
         {
-            if (delta.magnitude > 4f)
+            if (position.y > hexPicker.Center.y) // if touch above picked hexes
             {
-                // Turn the picked triplet
-                Debug.Log("turn: " + delta);
+                TurnTriplet(delta.x < 0 ? false : true); // clockwise if delta.x positive otherwise counter clockwise
             }
-            else
+            else // if touch under picked hexes
             {
-                PickTriplet();
+                TurnTriplet(delta.x < 0 ? true : false); // counter clockwise if delta.x positive otherwise clockwise
             }
-            touched = false;
         }
+        else
+        {
+            PickTriplet();
+        }
+        touched = false;
 
         ShowDebug();
     }
 
+    private void TurnTriplet(bool isClockwise)
+    {
+        hexPicker.TurnPickedTriplet(isClockwise);
+    }
+
     private void PickTriplet()
     {
-        Vector3 touchPosition = Utilities.ScreenToWorldPosition(position, Camera.main);
-        bool foundTriplet = hexPicker.FindTriplet(touchPosition);
+        if (hexPicker.CurrentState == TripletOperations.State.Busy) return;
+
+        bool foundTriplet = hexPicker.FindTriplet(position);
         if (foundTriplet)
         {
             transform.rotation = hexPicker.Rotation;

@@ -117,6 +117,17 @@ public class HexGrid : MonoBehaviour
 
     #endregion
 
+    public void SwitchHexes(Hex hex1, Hex hex2)
+    {
+        gridArray[hex1.X, hex1.Y] = hex2;
+        gridArray[hex2.X, hex2.Y] = hex1;
+
+        int tempX = hex1.X;
+        int tempY = hex1.Y;
+        hex1.GoTo(hex2.X, hex2.Y);
+        hex2.GoTo(tempX, tempY);
+    }
+
     #region Debug
 
     public void ShowDebug(int i, int j)
